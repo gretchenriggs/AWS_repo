@@ -17,18 +17,18 @@ from keras import backend as K
 K.set_image_dim_ordering('tf')
 
 
-def data_load(features, labels):
-    ''' Load features and labels from pickle and text files, respectively
-        Input: cPickle file of features, with RGB values extracted and
-                   centered around 0
-               text file of labels
-        Output: X and y feature and label arrays
-    '''
-    X = cPickle.load(open(features))
-    X = np.asarray(X)
-    y = np.loadtxt(labels, dtype=int)
-    X = preproc(X)
-    return X, y
+# def data_load(features, labels):
+#     ''' Load features and labels from pickle and text files, respectively
+#         Input: cPickle file of features, with RGB values extracted and
+#                    centered around 0
+#                text file of labels
+#         Output: X and y feature and label arrays
+#     '''
+#     X = cPickle.load(open(features))
+#     X = np.asarray(X)
+#     y = np.loadtxt(labels, dtype=int)
+#     X = preproc(X)
+#     return X, y
 
 
 def preproc(X):
@@ -37,6 +37,7 @@ def preproc(X):
         Output: X feature array, standardized and centered around zero.
     '''
     # Standardizing pixel values to be between 0 and 1
+    X = X.astype("float32")
     X /= 255.0
     # Zero-center the data (important)
     X = X - np.mean(X)
@@ -160,7 +161,7 @@ def cnn(X_train, y_train, X_test, y_test, kernel_size, pool_size,\
     return model, score, score_train
 
 
-def model_performance(model, X_train, X_test y_train, y_test):
+def model_performance(model, X_train, X_test, y_train, y_test):
     ''' Compute accuracy, precision, recall, F1-Score.
         Output the predicted y_test & y_train values.
         Output the probabilities for the predicted y_test & y_train values
@@ -176,8 +177,6 @@ def model_performance(model, X_train, X_test y_train, y_test):
                 y_test_pred_probab, array
                 conf_matrix, array
     '''
-
-
     # Predictions on Test and Train datasets
     y_test_pred = model.predict_class(X_test)
     y_train_pred = model.predict_class(X_train)
@@ -206,10 +205,14 @@ def standard_confusion_matrix(y_test, y_test_pred):
 
 if __name__ == '__main__':
     # Load in pickled 2500 124x124x3 images and labels (0, 1)
-    features = "X_arr_2500.pkl"
+    features = "../X_arr_2500.pkl"
     # labels = "project_125x125/Image_Labels_125x125_1-2500.txt"
-    labels = "Image_Labels_125x125_1-2500.txt"
-    X, y = data_load(features, labels)
+    labels = "../Image_Labels_125x125_1-2500.txt"
+    # X, y = data_load(features, labels)
+    X = cPickle.load(open(features))
+    X = np.asarray(X)
+    y = np.loadtxt(labels, dtype=int)
+    X = preproc(X)
 
     # Setting up basic parameters needed for neural network
     batch_size = 32
