@@ -160,7 +160,7 @@ def cnn(X_train, y_train, X_test, y_test, kernel_size, pool_size,\
     return model, score, score_train
 
 
-def model_performance(model, X_train, X_test y_train, y_test):
+def model_performance(model, X_train, X_test, y_train, y_test):
     ''' Compute accuracy, precision, recall, F1-Score.
         Output the predicted y_test & y_train values.
         Output the probabilities for the predicted y_test & y_train values
