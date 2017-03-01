@@ -233,13 +233,11 @@ def standard_confusion_matrix(y_test, y_test_pred):
 
 
 if __name__ == '__main__':
-    y = np.loadtxt(labels, dtype=int)
 
     # Load in pickled 2500 124x124x3 images from AWS S3 and labels (0, 1)
     features = 'X_arr_6700.pkl'
     labels = 'Image_Labels_125x125_6700.txt'
     X = get_X_from_bucket(features)
-
     X, y = data_load(X, labels)
 
     # Setting up basic parameters needed for neural network
