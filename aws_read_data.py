@@ -31,5 +31,7 @@ def get_X_from_bucket(file):
 
 
 if __name__ == '__main__':
-    X = get_X_from_bucket('X_arr_6700.pkl')
-    y = 'https://s3.amazonaws.com/capproj2017/Image_Labels_125x125_6700.txt'
+    features = 'X_arr_6700.pkl'
+    labels = 'Image_Labels_125x125_6700.txt'
+    X = get_X_from_bucket(features)
+    y = np.loadtxt(labels, dtype=int)
