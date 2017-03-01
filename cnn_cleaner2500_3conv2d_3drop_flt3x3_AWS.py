@@ -233,7 +233,6 @@ def standard_confusion_matrix(y_test, y_test_pred):
 
 
 if __name__ == '__main__':
-
     # Load in pickled 2500 124x124x3 images from AWS S3 and labels (0, 1)
     features = 'X_arr_6700.pkl'
     labels = 'Image_Labels_125x125_6700.txt'
