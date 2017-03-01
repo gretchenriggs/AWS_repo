@@ -24,6 +24,8 @@ def get_X_from_bucket(file):
     # Setting specific file of interest to file_key
     file_key = bucket.get_key(file)
 
+    file_key.get_contents_to_filename(file)
+
     # Unpickling and returning feature matrix X as an array
     X = cPickle.load(open(file))
     X = np.asarray(X)
