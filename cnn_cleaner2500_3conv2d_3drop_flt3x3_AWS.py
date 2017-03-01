@@ -42,7 +42,7 @@ def get_X_from_bucket(file):
     return X
 
 
-def data_load(features, labels):
+def data_load(X, labels):
     ''' Load features and labels from pickle and text files, respectively
         Input: cPickle file of features, with RGB values extracted and
                    centered around 0
