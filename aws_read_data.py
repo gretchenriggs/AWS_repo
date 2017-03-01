@@ -5,56 +5,30 @@ import os
 access_key = os.environ['AWS_ACCESS_KEY']
 secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY']
 
-def s3_upload_files(bucketname, *args):
-    """With the first string as the name of a bucket on s3, upload each individual
-    file from the filepaths listed in the list of strings.
-    Parameters
-    ----------
-    bucketname: String, List of Strings
-    *args: Strings, each representing a filepath to upload.
-    Returns
-    -------
-    None. Side effect is files will be uploaded.
-    """
-    access_key, secret_access_key = get_aws_access()
+def get_X_from_bucket(file):
+    ''' Download feature matrix X from S3 bucket
+        Input: File name containing pickled feature matrix X
+        Output: Feature matrix X as an array
+    '''
+    # Create connection to s3 and connect to the bucket
     conn = boto.connect_s3(access_key, secret_access_key)
-
-    if conn.lookup(bucket_name) is None:
-        bucket = conn.create_bucket(bucket_name, policy='public-read')
-    else:
-        bucket = conn.get_bucket(bucket_name)
-
-    for filename in args:
-            key = bucket.new_key(filename)
-            key.set_contents_from_filename(filename)
-
-# Create connection to s3 and connect to the bucket
-conn = boto.connect_s3(access_key, secret_access_key)
-b = conn.get_bucket(bucket)
-all_buckets = [b.name for b in conn.get_all_buckets()]
-
-bucket = 'capproj2017'
-
-local_file = '/tmp/X_arr_100.pkl'
-bucket.get_key(aws_app_assets + "X_arr_100.pkl") \
-      .get_contents_to_filename(local_file)
-clf = joblib.load(local_file)
-os.remove(local_file)
-
-
-if conn.lookup(bucket) is None:
-    b = conn.create_bucket(bucket, policy='public-read')
-else:
     b = conn.get_bucket(bucket)
 
-file_object = b.new_key('X_arr_100.pkl')
-file_object.set_contents_from_string('X_arr_100.pkl, policy='public-read')
+    # Outputting all bucket names to variable
+    all_buckets = [b.name for b in conn.get_all_buckets()]
 
-key.get_contents_to_filename(os.path.join(path, key.name))
+    # Setting bucket of interest
+    bucket = conn.get_bucket('capproj2017')
+
+    # Setting specific file of interest to file_key
+    file_key = bucket.get_key(file)
+
+    # Unpickling and returning feature matrix X as an array
+    X = cPickle.load(open(file_key))
+    X = np.asarray(X)
+    return X
+
 
 if __name__ == '__main__':
-    data_url = 'X_arr_100.pkl'
-    X = cPickle.load(open(data_url))
-    X = np.asarray(X)
-
+    X = get_X_from_bucket('X_arr_6700.pkl')
     y = 'https://s3.amazonaws.com/capproj2017/Image_Labels_125x125_1-100.txt'
