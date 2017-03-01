@@ -2,7 +2,7 @@ import cPickle
 import numpy as np
 import boto
 import os
-access_key = os.environ['AWS_ACCESS_KEY']
+access_key = os.environ['AWS_ACCESS_KEY_ID']
 secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY']
 
 def get_X_from_bucket(file):
@@ -12,10 +12,11 @@ def get_X_from_bucket(file):
     '''
     # Create connection to s3 and connect to the bucket
     conn = boto.connect_s3(access_key, secret_access_key)
-    b = conn.get_bucket(bucket)
-
-    # Outputting all bucket names to variable
-    all_buckets = [b.name for b in conn.get_all_buckets()]
+    # bucket = conn.get_bucket('capproj2017')
+    # b = conn.get_bucket(bucket)
+    #
+    # # Outputting all bucket names to variable
+    # all_buckets = [b.name for b in conn.get_all_buckets()]
 
     # Setting bucket of interest
     bucket = conn.get_bucket('capproj2017')
@@ -24,11 +25,11 @@ def get_X_from_bucket(file):
     file_key = bucket.get_key(file)
 
     # Unpickling and returning feature matrix X as an array
-    X = cPickle.load(open(file_key))
+    X = cPickle.load(open(file))
     X = np.asarray(X)
     return X
 
 
 if __name__ == '__main__':
     X = get_X_from_bucket('X_arr_6700.pkl')
-    y = 'https://s3.amazonaws.com/capproj2017/Image_Labels_125x125_1-100.txt'
+    y = 'https://s3.amazonaws.com/capproj2017/Image_Labels_125x125_6700.txt'
