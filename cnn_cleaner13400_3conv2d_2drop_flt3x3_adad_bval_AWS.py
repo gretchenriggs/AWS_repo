@@ -183,7 +183,7 @@ def cnn(X_train, y_train, X_test, y_test, kernel_size, pool_size,\
 
     # Let's train the model using RMSprop
     model.compile(loss='categorical_crossentropy',
-                  optimizer='sgd',
+                  optimizer='adadelta',
                   metrics=['accuracy'])
 
     # During fit process, you can watch train and test error simultaneously
