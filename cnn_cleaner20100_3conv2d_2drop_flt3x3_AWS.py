@@ -68,7 +68,7 @@ def preproc(X):
     X /= 255.0
     # Zero-center the data (important), in steps due to memory error
     mean_X = np.mean(X)
-    for i in # XXX: range(len(X)):
+    for i in range(len(X)):
         X[i] = X[i] - mean_X
     return X
 
