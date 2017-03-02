@@ -254,8 +254,8 @@ if __name__ == '__main__':
     X2 = get_X_from_bucket(features2)
     X3 = get_X_from_bucket(features3)
 
-    # Only grab 4300 images from X3 to make total of 6700+6700+4300 = 17,500
-    X3 = X3[0:4300]
+    # Only grab 4100 images from X3 to make total of 6700+6700+4100 = 17,500
+    X3 = X3[0:4100]
     X = np.concatenate([X1, X2, X3], axis=0)
 
     # Setting 17,500 images in training dataset instead of 80% of 17,500 = 14000
