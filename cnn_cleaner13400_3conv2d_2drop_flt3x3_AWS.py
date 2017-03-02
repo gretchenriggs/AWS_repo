@@ -240,12 +240,10 @@ if __name__ == '__main__':
     # Load in pickled 20100 124x124x3 images from AWS S3 and labels (0, 1)
     features1 = 'X_arr_6700.pkl'
     features2 = 'X_arr_6700_deg0mir.pkl'
-    features3 = 'X_arr_6700_deg90.pkl'
-    labels = 'Image_Labels_125x125_20100.txt'
+    labels = 'Image_Labels_125x125_13400.txt'
     X1 = get_X_from_bucket(features1)
     X2 = get_X_from_bucket(features2)
-    X3 = get_X_from_bucket(features3)
-    X = np.concatenate([X1, X2, X3], axis=0)
+    X = np.concatenate([X1, X2], axis=0)
     X, y = data_load(X, labels)
 
     # Setting up basic parameters needed for neural network
