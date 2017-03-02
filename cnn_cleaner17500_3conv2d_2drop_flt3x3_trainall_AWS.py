@@ -258,6 +258,12 @@ if __name__ == '__main__':
     X3 = X3[0:4300]
     X = np.concatenate([X1, X2, X3], axis=0)
 
+    # Setting 17,500 images in training dataset instead of 80% of 17,500 = 14000
+    #    Hyperparameters already optimized on earlier test sets (unseen by the
+    #    model.)
+    X_train = X.copy()
+    y_train = y.copy()
+
     # Used for zeroing train & test data around mean. Computed only from
     #  training data.
     mean_X_train = np.mean(X_train)
@@ -266,12 +272,10 @@ if __name__ == '__main__':
 
     # Setting 17,500 images in training dataset instead of 80% of 17,500 = 14000
     #   Using 6700 new images as test dataset
-    X_train = X.copy()
-    y_train = y.copy()
-
     features4 = 'X_arr_6700_deg90mir.pkl'
-    X_test = get_X_from_bucket(features4)
     test_labels = 'Image_Labels_125x125_6700.txt'
+
+    X_test = get_X_from_bucket(features4)
     X_test, y_test = data_load(X_test, test_labels, mean_X_train)
 
     # Setting up basic parameters needed for neural network
