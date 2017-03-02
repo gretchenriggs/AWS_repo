@@ -66,8 +66,10 @@ def preproc(X):
     # Standardizing pixel values to be between 0 and 1
     X = X.astype("float32")
     X /= 255.0
-    # Zero-center the data (important)
-    X = X - np.mean(X)
+    # Zero-center the data (important), in steps due to memory error
+    mean_X = np.mean(X)
+    for i in # XXX: range(len(X)):
+        X[i] = X[i] - mean_X
     return X
 
 
