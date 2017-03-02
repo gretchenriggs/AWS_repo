@@ -262,13 +262,14 @@ if __name__ == '__main__':
     #    Hyperparameters already optimized on earlier test sets (unseen by the
     #    model.)
     X_train = X.copy()
-    y_train = y.copy()
+
 
     # Used for zeroing train & test data around mean. Computed only from
     #  training data.
     mean_X_train = np.mean(X_train)
 
     X, y = data_load(X, labels, mean_X_train)
+    y_train = y.copy()
 
     # Setting 17,500 images in training dataset instead of 80% of 17,500 = 14000
     #   Using 6700 new images as test dataset
