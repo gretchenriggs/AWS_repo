@@ -181,7 +181,7 @@ def cnn(X_train, y_train, X_test, y_test, kernel_size, pool_size,\
 
     # Let's train thecnn_cleaner2500_dense256.py model using RMSpropnb_classes
     model.compile(loss='categorical_crossentropy',
-                  optimizer='rmsprop',
+                  optimizer='adadelta',
                   metrics=['accuracy'])
 
     # During fit process, you can watch train and test error simultaneously
