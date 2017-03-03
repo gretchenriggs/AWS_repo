@@ -285,6 +285,10 @@ if __name__ == '__main__':
                         kernel_size, pool_size, batch_size, nb_classes,\
                         nb_epoch)
 
+    # Save the model to disk
+    with open('finalized_model_13400.pkl', 'wb') as pkl_f:
+        cPickle.dump(model, pkl_f)
+
     # Evaluating CNN Model performance
     y_train_pred, y_test_pred, y_train_pred_proba, y_test_pred_proba, \
        conf_matrix = model_performance(model, X_train, X_test, y_train, y_test)
