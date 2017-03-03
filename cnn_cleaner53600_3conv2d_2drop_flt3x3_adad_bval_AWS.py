@@ -304,7 +304,7 @@ if __name__ == '__main__':
                      / np.sum(conf_matrix)
     precision = float(conf_matrix[0][0]) \
                       / (conf_matrix[0][0] + conf_matrix[0][1])
-    recall = = float(conf_matrix[0][0]) \
+    recall = float(conf_matrix[0][0]) \
                      / (conf_matrix[0][0] + conf_matrix[1][0])
     f1_score = 2 * (precision * recall) / (precision + recall)
     print "Accuracy: {}\n".format(accuracy)
