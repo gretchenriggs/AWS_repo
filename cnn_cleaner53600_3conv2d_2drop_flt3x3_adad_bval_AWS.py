@@ -44,65 +44,67 @@ def get_X_from_bucket(file):
     return X
 
 
-def data_load(X, labels, mean_X_train):
-    ''' Load features and labels from pickle and text files, respectively
-        Input: cPickle file of features, with RGB values extracted and
-                   centered around 0
-               text file of labels
-        Output: X and y feature and label arrays
-    '''
-    # X = cPickle.load(open(features))
-    # X = np.asarray(X)
-    y = np.loadtxt(labels, dtype=int)
-    X = preproc(X, mean_X_train)
-    return X, y
+# def data_load(X, labels):
+#     ''' Load features and labels from pickle and text files, respectively
+#         Input: cPickle file of features, with RGB values extracted and
+#                    centered around 0
+#                text file of labels
+#         Output: X and y feature and label arrays
+#     '''
+#     X = cPickle.load(open(features))
+#     X = np.asarray(X)
+#     y = np.loadtxt(labels, dtype=int)
+#     return y
 
 
-def preproc(X, mean_X_train):
+def preproc(X_train, X_test):
     ''' Set pixel values to be between 0 and 1 and center them around zero.
-        Input: X feature array
-        Output: X feature array, standardized and centered around zero.
+        Input: X feature arrays
+        Output: X feature arrays, standardized and centered around zero.
     '''
     # Standardizing pixel values to be between 0 and 1
-    X = X.astype("float32")
-    X /= 255.0
-    # Zero-center the data (important), in steps due to memory error
-    for i in range(len(X)):
-        X[i] = X[i] - mean_X_train
-    return X
+    X_train = X_train.astype("float32")
+    X_test = X_test.astype("float32")
 
-def bin_vector_y(y_train, y_test, nb_classes):
+    X_train /= 255.0
+    X_test /= 255.0
+
+    # Zero-center the data (important), in steps due to memory error
+    # Compute mean only on Training data to prevent leakage of info into
+    #   Test set
+    mean_X_train = np.mean(X_train)
+    for i in range(len(X_train)):
+        X_train[i] = X_train[i] - mean_X_train
+    for i in range(len(X_test)):
+        X_test[i] = X_test[i] - mean_X_train
+    return X_train, X_test
+
+
+def train_test(X, y, nb_classes, test_percent=0.20):
+    ''' Split the X, y datasets into training & test sets based on
+               selected percentage (optional)
+        Input: X feature, array
+               y label, array
+        Output: X_train & X_test, arrays
+                y_train & y_test, arrays, now converted to binary class
+                    matrices
+    '''
+    X_train, X_test, y_train, y_test = train_test_split(X, y, \
+                              test_size = test_percent, random_state=42)
+    print('X_train shape:', X_train.shape)
+    print(X_train.shape[0], 'train samples')
+    print(X_test.shape[0], 'test samples')
+
+    # Settting pixel values between 0-1 and centering around zero
+    X_train, X_test = preproc(X_train, X_test)
+
     # Convert class vectors to binary class matrices.
     y_train_orig = y_train.copy()
     y_test_orig = y_test.copy()
     y_train = np_utils.to_categorical(y_train, nb_classes)
     y_test = np_utils.to_categorical(y_test, nb_classes)
 
-    return y_train, y_test, y_train_orig, y_test_orig
-
-
-# def train_test(X, y, nb_classes, test_percent=0.20):
-#     ''' Split the X, y datasets into training & test sets based on
-#                selected percentage (optional)
-#         Input: X feature, array
-#                y label, array
-#         Output: X_train & X_test, arrays
-#                 y_train & y_test, arrays, now converted to binary class
-#                     matrices
-#     '''
-#     # X_train, X_test, y_train, y_test = train_test_split(X, y, \
-#     #                           test_size = test_percent, random_state=42)
-#     print('X_train shape:', X_train.shape)
-#     print(X_train.shape[0], 'train samples')
-#     print(X_test.shape[0], 'test samples')
-#
-#     # Convert class vectors to binary class matrices.
-#     y_train_orig = y_train.copy()
-#     y_test_orig = y_test.copy()
-#     y_train = np_utils.to_categorical(y_train, nb_classes)
-#     y_test = np_utils.to_categorical(y_test, nb_classes)
-#
-#     return X_train, X_test, y_train, y_test, y_train_orig, y_test_orig
+    return X_train, X_test, y_train, y_test, y_train_orig, y_test_orig
 
 
 def keras_inp_prep(X_train, X_test, img_dep, img_rows, img_cols, \
@@ -157,7 +159,7 @@ def cnn(X_train, y_train, X_test, y_test, kernel_size, pool_size,\
     model = Sequential()
 
     model.add(Convolution2D(32, kernel_size, kernel_size, \
-                    border_mode='same', input_shape=X_train.shape[1:]))
+                    border_mode='valid', input_shape=X_train.shape[1:]))
     model.add(Activation('relu'))
     model.add(Convolution2D(32, kernel_size, kernel_size))
     model.add(Activation('relu'))
@@ -166,7 +168,7 @@ def cnn(X_train, y_train, X_test, y_test, kernel_size, pool_size,\
     # model.add(Dropout(0.25))
 
     model.add(Convolution2D(64, kernel_size, kernel_size, \
-                            border_mode='same'))
+                            border_mode='valid'))
     model.add(Activation('relu'))
     # model.add(Convolution2D(64, kernel_size, kernel_size))
     # model.add(Activation('relu'))
@@ -191,7 +193,7 @@ def cnn(X_train, y_train, X_test, y_test, kernel_size, pool_size,\
 
     # Evaluating final accuracy on training and test sets
     score = model.evaluate(X_test, y_test, verbose=0)
-    print('Test accuracy:', score[1])
+    print('Test accuracy:', score[1]) # this is the one we care about
 
     score_train = model.evaluate(X_train, y_train, verbose=0)
     print('Train accuracy:', score_train[1])
@@ -215,8 +217,6 @@ def model_performance(model, X_train, X_test, y_train, y_test):
                 y_test_pred_probab, array
                 conf_matrix, array
     '''
-
-
     # Predictions on Test and Train datasets
     y_test_pred = model.predict_classes(X_test)
     y_train_pred = model.predict_classes(X_train)
@@ -247,39 +247,27 @@ def standard_confusion_matrix(y_test, y_test_pred):
 
 
 if __name__ == '__main__':
-    # Load in pickled 17,500 124x124x3 images from AWS S3 and labels (0, 1)
+    # Load in pickled 20100 124x124x3 images from AWS S3 and labels (0, 1)
     features1 = 'X_arr_6700.pkl'
     features2 = 'X_arr_6700_deg0mir.pkl'
     features3 = 'X_arr_6700_deg90.pkl'
-    labels = 'Image_Labels_125x125_17500.txt'
+    features4 = 'X_arr_6700_deg90mir.pkl'
+    features5 = 'X_arr_6700_deg180.pkl'
+    features6 = 'X_arr_6700_deg180mir.pkl'
+    features7 = 'X_arr_6700_deg270.pkl'
+    features8 = 'X_arr_6700_deg270mir.pkl'
+    labels = 'Image_Labels_125x125_53600.txt'
     X1 = get_X_from_bucket(features1)
     X2 = get_X_from_bucket(features2)
     X3 = get_X_from_bucket(features3)
-
-    # Only grab 4100 images from X3 to make total of 6700+6700+4100 = 17,500
-    X3 = X3[0:4100]
-    X = np.concatenate([X1, X2, X3], axis=0)
-
-    # Setting 17,500 images in training dataset instead of 80% of 17,500 = 14000
-    #    Hyperparameters already optimized on earlier test sets (unseen by the
-    #    model.)
-    X_train = X.copy()
-
-
-    # Used for zeroing train & test data around mean. Computed only from
-    #  training data.
-    mean_X_train = np.mean(X_train)
-
-    X, y = data_load(X, labels, mean_X_train)
-    y_train = y.copy()
-
-    # Setting 17,500 images in training dataset instead of 80% of 17,500 = 14000
-    #   Using 6700 new images as test dataset
-    features4 = 'X_arr_6700_deg90mir.pkl'
-    test_labels = 'Image_Labels_125x125_6700.txt'
-
-    X_test = get_X_from_bucket(features4)
-    X_test, y_test = data_load(X_test, test_labels, mean_X_train)
+    X4 = get_X_from_bucket(features4)
+    X5 = get_X_from_bucket(features5)
+    X6 = get_X_from_bucket(features6)
+    X7 = get_X_from_bucket(features7)
+    X8 = get_X_from_bucket(features8)
+    X = np.concatenate([X1, X2, X3, X4, X5, X6, X7, X8], axis=0)
+    y = np.loadtxt(labels, dtype=int)
+    # X, y = data_load(X, labels)
 
     # Setting up basic parameters needed for neural network
     batch_size = 32
@@ -289,15 +277,11 @@ if __name__ == '__main__':
     pool_size = (2, 2)
 
     # Train/test split for cross validation
-    # test_percent = 0.20
-    # X_train, X_test, y_train, y_test, y_train_orig, y_test_orig = \
-    #                         train_test(X, y, nb_classes, test_percent)
+    test_percent = 0.20
+    X_train, X_test, y_train, y_test, y_train_orig, y_test_orig = \
+                            train_test(X, y, nb_classes, test_percent)
 
-    # Computing  binary vector for y
-    y_train, y_test, y_train_orig, y_test_orig = bin_vector_y(y_train, y_test, \
-                                                              nb_classes)
-
-    # input image dimensions 124x124x3 for input RGB Satellite Images
+    # input image dimensions - 124x124x3 for input RGB Satellite Images
     img_rows, img_cols, img_dep = X_train.shape[1], X_train.shape[2], \
                                   X_train.shape[3]
 
@@ -316,3 +300,14 @@ if __name__ == '__main__':
     # Evaluating CNN Model performance
     y_train_pred, y_test_pred, y_train_pred_proba, y_test_pred_proba, \
        conf_matrix = model_performance(model, X_train, X_test, y_train, y_test)
+    accuracy = float(conf_matrix[0][0] + conf_matrix[1][1]) \
+                     / np.sum(conf_matrix)
+    precision = float(conf_matrix[0][0]) \
+                      / (conf_matrix[0][0] + conf_matrix[0][1])
+    recall = = float(conf_matrix[0][0]) \
+                     / (conf_matrix[0][0] + conf_matrix[1][0])
+    f1_score = 2 * (precision * recall) / (precision + recall)
+    print "Accuracy: {}\n".format(accuracy)
+    print "Precision: {}\n".format(precision)
+    print "Recall: {}\n".format(recall)
+    print "F1-Score: {}\n".format(f1_score)
