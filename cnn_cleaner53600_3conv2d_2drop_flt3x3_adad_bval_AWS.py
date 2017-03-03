@@ -297,6 +297,10 @@ if __name__ == '__main__':
                         kernel_size, pool_size, batch_size, nb_classes,\
                         nb_epoch)
 
+    # Save the model to disk
+    with open('finalized_model_all.pkl', 'wb') as pkl_f:
+        cPickle.dump(model, pkl_f)
+
     # Evaluating CNN Model performance
     y_train_pred, y_test_pred, y_train_pred_proba, y_test_pred_proba, \
        conf_matrix = model_performance(model, X_train, X_test, y_train, y_test)
@@ -304,7 +308,7 @@ if __name__ == '__main__':
                      / np.sum(conf_matrix)
     precision = float(conf_matrix[0][0]) \
                       / (conf_matrix[0][0] + conf_matrix[0][1])
-    recall = float(conf_matrix[0][0]) \
+    recall = aafloat(conf_matrix[0][0]) \
                      / (conf_matrix[0][0] + conf_matrix[1][0])
     f1_score = 2 * (precision * recall) / (precision + recall)
     print "Accuracy: {}\n".format(accuracy)
