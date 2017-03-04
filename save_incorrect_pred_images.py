@@ -10,15 +10,19 @@ if __name__ == '__main__':
 
     X_test_false_manmade = []
     X_test_false_nature = []
+    indx_false_manmade = []
+    indx_false_nature = []
     for i in xrange(len(y_test_1d)):
         # Saving out False Positives (Natural images incorrectly classified as
         #   man-made.)
         if y_test_1d[i] == 0 and y_test_pred[i] == 1:
             X_test_false_manmade.append(X_test[i])
+            indx_false_manmade.append(i)
         # Saving out False Negatives (Man-made images incorrectly classified as
         #   natural.)
         elif y_test_1d[i] == 1 and y_test_pred[i] == 0:
             X_test_false_nature.append(X_test[i])
+            indx_false_nature.append(i)
 
     # Upping max recursion limit so don't run out of resources while cPickling
     #   the model.
@@ -29,11 +33,16 @@ if __name__ == '__main__':
     sys.setrecursionlimit(max_rec)
 
     # Save the False Positives (False Man-made Images) to disk
-    with open('X_test_false_manmade_images.pkl', 'wb') as pkl_fp:
-        cPickle.dump(X_test_false_manmade, pkl_fp)
+    # with open('X_test_false_manmade_images.pkl', 'wb') as pkl_fp:
+    #     cPickle.dump(X_test_false_manmade, pkl_fp)
+
+    with open('indx_false_manmade_images.pkl', 'wb') as pkl_indx_fp:
+        cPickle.dump(indx_false_manmade), pkl_indx_fp)
+
 
     # Save the False Negatives (False Nature Images) to disk
-    with open('X_test_false_nature_images.pkl', 'wb') as pkl_fn:
-        cPickle.dump(X_test_false_nature, pkl_fn)
+    # with open('X_test_false_nature_images.pkl', 'wb') as pkl_fn:
+    #     cPickle.dump(X_test_false_nature, pkl_fn)
 
-        
+    with open('indx_false_nature_images.pkl', 'wb') as pkl_indx_fn:
+        cPickle.dump(indx_false_nature, pkl_indx_fn)
