@@ -5,6 +5,8 @@
     (# images, 124, 124, 3) for the X_train images below
 '''
 import cPickle
+import resource
+import sys
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
@@ -285,6 +287,19 @@ if __name__ == '__main__':
                         kernel_size, pool_size, batch_size, nb_classes,\
                         nb_epoch)
 
+
+    # Upping max recursion limit so don't run out of resources while cPickling
+    #   the model.
+    # Can run the print statements below this line in to check resources prior
+    #   to updating them
+    # print "resource.getrlimit(resource.RLIMIT_STACK)
+    # print sys.getrecursionlimit()
+    max_rec = 0x100000
+
+    # May segfault without this line. 0x100 is a guess at the size of each stack frame.
+    resource.setrlimit(resource.RLIMIT_STACK, [0x100 * max_rec, resource.RLIM_INFINITY])
+    sys.setrecursionlimit(max_rec)
+
     # Save the model to disk
     with open('finalized_model_13400.pkl', 'wb') as pkl_f:
         cPickle.dump(model, pkl_f)
@@ -292,3 +307,15 @@ if __name__ == '__main__':
     # Evaluating CNN Model performance
     y_train_pred, y_test_pred, y_train_pred_proba, y_test_pred_proba, \
        conf_matrix = model_performance(model, X_train, X_test, y_train, y_test)
+
+    accuracy = float(conf_matrix[0][0] + conf_matrix[1][1]) \
+                     / np.sum(conf_matrix)
+    precision = float(conf_matrix[0][0]) \
+                      / (conf_matrix[0][0] + conf_matrix[0][1])
+    recall = float(conf_matrix[0][0]) \
+                     / (conf_matrix[0][0] + conf_matrix[1][0])
+    f1_score = 2 * (precision * recall) / (precision + recall)
+    print "Accuracy: {}".format(accuracy)
+    print "Precision: {}".format(precision)
+    print "Recall: {}".format(recall)
+    print "F1-Score: {}".format(f1_score)
