@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # with open('X_test_false_manmade_images.pkl', 'wb') as pkl_fp:
     #     cPickle.dump(X_test_false_manmade, pkl_fp)
     with open('indx_false_manmade_images.pkl', 'wb') as pkl_indx_fp:
-        cPickle.dump(indx_false_manmade), pkl_indx_fp)
+        cPickle.dump(indx_false_manmade, pkl_indx_fp)
 
 
     # Save the False Negatives (False Nature Images) to disk
