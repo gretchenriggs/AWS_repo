@@ -120,6 +120,7 @@ def keras_inp_prep(X_train, X_test, img_dep, img_rows, img_cols, \
         The tf and th image_dim_ordering is first set in the
             ~/keras/keras.json file.  Make sure it matches the
             K.set_image_dim_ordering at the beginning of this script.
+
         Input: X_train, X_test, arrays
                img_dep, img_rows, img_cols, integers
                dim_ordering, string

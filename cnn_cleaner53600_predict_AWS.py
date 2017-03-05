@@ -141,65 +141,65 @@ def keras_inp_prep(X_train, X_test, img_dep, img_rows, img_cols, \
     return X_train, X_test, input_shape
 
 
-def cnn(X_train, y_train, X_test, y_test, kernel_size, pool_size,\
-        batch_size, nb_classes, nb_epoch):
-    ''' This is the Convolutional Neural Net architecture, which is the
-            workhorse in this python script, for classifying the images
-            as natural (0) or containing man-made images (1).
-        Input: X_train, y_train, training data, arrays
-               X_test, y_test, cross validation data, arrays
-               kernel_size, integer (filter size)
-               pool_size, tuple of integers (desampling values)
-               batch_size, integer (# of images to process at a time)
-               nb_epoch, integer (# of iterations of fwd/back propagation
-                                  to run CNN through)
-        Output: model, Sequential NN object
-                score, accuracy of prediction on test data
-                score_train, accuracy of prediction on training data
-    '''
-    model = Sequential()
-
-    model.add(Convolution2D(32, kernel_size, kernel_size, \
-                    border_mode='valid', input_shape=X_train.shape[1:]))
-    model.add(Activation('relu'))
-    model.add(Convolution2D(32, kernel_size, kernel_size))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=pool_size))
-    model.add(Dropout(0.5))
-    # model.add(Dropout(0.25))
-
-    model.add(Convolution2D(64, kernel_size, kernel_size, \
-                            border_mode='valid'))
-    model.add(Activation('relu'))
-    # model.add(Convolution2D(64, kernel_size, kernel_size))
-    # model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=pool_size))
-
-    model.add(Flatten())
-    model.add(Dense(512))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(nb_classes))
-    model.add(Activation('softmax'))
-
-    # Configure the tmodel, using AdaDelta optimization
-    model.compile(loss='categorical_crossentropy',
-                  optimizer='adadelta',
-                  metrics=['accuracy'])
-
-    # Training the model, validating results with 'accuracy' metric during
-    #   training on both train and test sets.
-    model.fit(X_train, y_train, batch_size=batch_size, nb_epoch=nb_epoch,
-              verbose=1, validation_data=(X_test, y_test))
-
-    # Evaluating final accuracy on training and test sets
-    score = model.evaluate(X_test, y_test, verbose=0)
-    print('Test accuracy:', score[1]) # this is the one we care about
-
-    score_train = model.evaluate(X_train, y_train, verbose=0)
-    print('Train accuracy:', score_train[1])
-
-    return model, score, score_train
+# def cnn(X_train, y_train, X_test, y_test, kernel_size, pool_size,\
+#         batch_size, nb_classes, nb_epoch):
+#     ''' This is the Convolutional Neural Net architecture, which is the
+#             workhorse in this python script, for classifying the images
+#             as natural (0) or containing man-made images (1).
+#         Input: X_train, y_train, training data, arrays
+#                X_test, y_test, cross validation data, arrays
+#                kernel_size, integer (filter size)
+#                pool_size, tuple of integers (desampling values)
+#                batch_size, integer (# of images to process at a time)
+#                nb_epoch, integer (# of iterations of fwd/back propagation
+#                                   to run CNN through)
+#         Output: model, Sequential NN object
+#                 score, accuracy of prediction on test data
+#                 score_train, accuracy of prediction on training data
+#     '''
+#     model = Sequential()
+#
+#     model.add(Convolution2D(32, kernel_size, kernel_size, \
+#                     border_mode='valid', input_shape=X_train.shape[1:]))
+#     model.add(Activation('relu'))
+#     model.add(Convolution2D(32, kernel_size, kernel_size))
+#     model.add(Activation('relu'))
+#     model.add(MaxPooling2D(pool_size=pool_size))
+#     model.add(Dropout(0.5))
+#     # model.add(Dropout(0.25))
+#
+#     model.add(Convolution2D(64, kernel_size, kernel_size, \
+#                             border_mode='valid'))
+#     model.add(Activation('relu'))
+#     # model.add(Convolution2D(64, kernel_size, kernel_size))
+#     # model.add(Activation('relu'))
+#     model.add(MaxPooling2D(pool_size=pool_size))
+#
+#     model.add(Flatten())
+#     model.add(Dense(512))
+#     model.add(Activation('relu'))
+#     model.add(Dropout(0.5))
+#     model.add(Dense(nb_classes))
+#     model.add(Activation('softmax'))
+#
+#     # Configure the tmodel, using AdaDelta optimization
+#     model.compile(loss='categorical_crossentropy',
+#                   optimizer='adadelta',
+#                   metrics=['accuracy'])
+#
+#     # Training the model, validating results with 'accuracy' metric during
+#     #   training on both train and test sets.
+#     model.fit(X_train, y_train, batch_size=batch_size, nb_epoch=nb_epoch,
+#               verbose=1, validation_data=(X_test, y_test))
+#
+#     # Evaluating final accuracy on training and test sets
+#     score = model.evaluate(X_test, y_test, verbose=0)
+#     print('Test accuracy:', score[1]) # this is the one we care about
+#
+#     score_train = model.evaluate(X_train, y_train, verbose=0)
+#     print('Train accuracy:', score_train[1])
+#
+#     return model, score, score_train
 
 
 def model_performance(model, X_train, X_test, y_train, y_test):
@@ -282,6 +282,10 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test, y_train_orig, y_test_orig = \
                             train_test(X, y, nb_classes, test_percent)
 
+    # Save out original Train & Test set images for later evaluation of fitting
+    X_train_orig = X_train.copy()
+    X_test_orig = X_test.copy()
+
     # input image dimensions - 124x124x3 for input RGB Satellite Images
     img_rows, img_cols, img_dep = X_train.shape[1], X_train.shape[2], \
                                   X_train.shape[3]
@@ -293,10 +297,10 @@ if __name__ == '__main__':
     X_train, X_test, input_shape = keras_inp_prep(X_train, X_test,\
                        img_dep, img_rows, img_cols, dim_ordering='tf')
 
-    # Run Convolutional Neural Net
-    model, score, score_train = cnn(X_train, y_train, X_test, y_test,\
-                        kernel_size, pool_size, batch_size, nb_classes,\
-                        nb_epoch)
+    # # Run Convolutional Neural Net
+    # model, score, score_train = cnn(X_train, y_train, X_test, y_test,\
+    #                     kernel_size, pool_size, batch_size, nb_classes,\
+    #                     nb_epoch)
 
     # Upping max recursion limit so don't run out of resources while cPickling
     #   the model.
@@ -304,15 +308,18 @@ if __name__ == '__main__':
     #   to updating them
     # print "resource.getrlimit(resource.RLIMIT_STACK)
     # print sys.getrecursionlimit()
-    max_rec = 0x100000
+    # max_rec = 0x100000
+    #
+    # # May segfault without this line. 0x100 is a guess at the size of each stack frame.
+    # resource.setrlimit(resource.RLIMIT_STACK, [0x100 * max_rec, resource.RLIM_INFINITY])
+    # sys.setrecursionlimit(max_rec)
+    #
+    # # Save the model to disk
+    # with open('finalized_model_all.pkl', 'wb') as pkl_f:
+    #     cPickle.dump(model, pkl_f)
 
-    # May segfault without this line. 0x100 is a guess at the size of each stack frame.
-    resource.setrlimit(resource.RLIMIT_STACK, [0x100 * max_rec, resource.RLIM_INFINITY])
-    sys.setrecursionlimit(max_rec)
-
-    # Save the model to disk
-    with open('finalized_model_all.pkl', 'wb') as pkl_f:
-        cPickle.dump(model, pkl_f)
+    # Read in Pickled Final model
+    model = cPickle.load(open('finalized_model_all.pkl'))
 
     # Evaluating CNN Model performance
     y_train_pred, y_test_pred, y_train_pred_proba, y_test_pred_proba, \
@@ -321,10 +328,50 @@ if __name__ == '__main__':
                      / np.sum(conf_matrix)
     precision = float(conf_matrix[0][0]) \
                       / (conf_matrix[0][0] + conf_matrix[0][1])
-    recall = aafloat(conf_matrix[0][0]) \
+    recall = float(conf_matrix[0][0]) \
                      / (conf_matrix[0][0] + conf_matrix[1][0])
     f1_score = 2 * (precision * recall) / (precision + recall)
     print "Accuracy: {}\n".format(accuracy)
     print "Precision: {}\n".format(precision)
     print "Recall: {}\n".format(recall)
     print "F1-Score: {}\n".format(f1_score)
+
+    # Converting binary class vector y_test to 1D vector
+    y_test_1d = y_test[:,1]
+
+    X_test_false_manmade = []
+    X_test_false_nature = []
+    indx_false_manmade = []
+    indx_false_nature = []
+    for i in xrange(len(y_test_1d)):
+        # Saving out False Positives (Natural images incorrectly classified as
+        #   man-made.)
+        if y_test_1d[i] == 0 and y_test_pred[i] == 1:
+            X_test_false_manmade.append(X_test_orig[i])
+            indx_false_manmade.append(i)
+        # Saving out False Negatives (Man-made images incorrectly classified as
+        #   natural.)
+        elif y_test_1d[i] == 1 and y_test_pred[i] == 0:
+            X_test_false_nature.append(X_test_orig[i])
+            indx_false_nature.append(i)
+
+    # Upping max recursion limit so don't run out of resources while cPickling
+    #   the model.
+    max_rec = 0x100000
+
+    # May segfault without this line. 0x100 is a guess at the size of each stack frame.
+    resource.setrlimit(resource.RLIMIT_STACK, [0x100 * max_rec, resource.RLIM_INFINITY])
+    sys.setrecursionlimit(max_rec)
+
+    # Save the False Positives (False Man-made Images) to disk
+    # with open('X_test_false_manmade_images.pkl', 'wb') as pkl_fp:
+    #     cPickle.dump(X_test_false_manmade, pkl_fp)
+    with open('indx_false_manmade_images.pkl', 'wb') as pkl_indx_fp:
+        cPickle.dump(indx_false_manmade), pkl_indx_fp)
+
+
+    # Save the False Negatives (False Nature Images) to disk
+    # with open('X_test_false_nature_images.pkl', 'wb') as pkl_fn:
+    #     cPickle.dump(X_test_false_nature, pkl_fn)
+    with open('indx_false_nature_images.pkl', 'wb') as pkl_indx_fn:
+        cPickle.dump(indx_false_nature, pkl_indx_fn)
