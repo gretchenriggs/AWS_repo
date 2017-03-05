@@ -282,6 +282,10 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test, y_train_orig, y_test_orig = \
                             train_test(X, y, nb_classes, test_percent)
 
+    # Save out original Train & Test set images for later evaluation of fitting
+    X_train_orig = X_train.copy()
+    X_test_orig = X_test.copy()
+
     # input image dimensions - 124x124x3 for input RGB Satellite Images
     img_rows, img_cols, img_dep = X_train.shape[1], X_train.shape[2], \
                                   X_train.shape[3]
@@ -311,8 +315,8 @@ if __name__ == '__main__':
     sys.setrecursionlimit(max_rec)
 
     # Save the model to disk
-    with open('finalized_model_all.pkl', 'wb') as pkl_f:
-        cPickle.dump(model, pkl_f)
+    # To reload, would use model = load_model('my_model.h5')
+    model.save(finalized_model_all.h5')  # creates a HDF5 file
 
     # Evaluating CNN Model performance
     y_train_pred, y_test_pred, y_train_pred_proba, y_test_pred_proba, \
@@ -321,10 +325,33 @@ if __name__ == '__main__':
                      / np.sum(conf_matrix)
     precision = float(conf_matrix[0][0]) \
                       / (conf_matrix[0][0] + conf_matrix[0][1])
-    recall = aafloat(conf_matrix[0][0]) \
+    recall = float(conf_matrix[0][0]) \
                      / (conf_matrix[0][0] + conf_matrix[1][0])
     f1_score = 2 * (precision * recall) / (precision + recall)
     print "Accuracy: {}\n".format(accuracy)
     print "Precision: {}\n".format(precision)
     print "Recall: {}\n".format(recall)
     print "F1-Score: {}\n".format(f1_score)
+
+    # Converting binary class vector y_test to 1D vector
+    y_test_1d = y_test[:,1]
+
+    X_test_false_manmade = []
+    X_test_false_nature = []
+    for i in xrange(len(y_test_1d)):
+        # Saving out False Positives (Natural images incorrectly classified as
+        #   man-made.)
+        if y_test_1d[i] == 0 and y_test_pred[i] == 1:
+            X_test_false_manmade.append(X_test_orig[i])
+        # Saving out False Negatives (Man-made images incorrectly classified as
+        #   natural.)
+        elif y_test_1d[i] == 1 and y_test_pred[i] == 0:
+            X_test_false_nature.append(X_test_orig[i])
+
+    # Save the False Positives (False Man-made Images) to disk
+    with open('X_test_false_manmade_images.pkl', 'wb') as pkl_fp:
+        cPickle.dump(X_test_false_manmade, pkl_fp)
+
+    # Save the False Negatives (False Nature Images) to disk
+    with open('X_test_false_nature_images.pkl', 'wb') as pkl_fn:
+        cPickle.dump(X_test_false_nature, pkl_fn)
