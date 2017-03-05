@@ -35,7 +35,6 @@ if __name__ == '__main__':
     # Save the False Positives (False Man-made Images) to disk
     # with open('X_test_false_manmade_images.pkl', 'wb') as pkl_fp:
     #     cPickle.dump(X_test_false_manmade, pkl_fp)
-
     with open('indx_false_manmade_images.pkl', 'wb') as pkl_indx_fp:
         cPickle.dump(indx_false_manmade), pkl_indx_fp)
 
@@ -43,6 +42,11 @@ if __name__ == '__main__':
     # Save the False Negatives (False Nature Images) to disk
     # with open('X_test_false_nature_images.pkl', 'wb') as pkl_fn:
     #     cPickle.dump(X_test_false_nature, pkl_fn)
-
     with open('indx_false_nature_images.pkl', 'wb') as pkl_indx_fn:
         cPickle.dump(indx_false_nature, pkl_indx_fn)
+
+    # Save out X_test_orig & y_test_orig
+    with open('X_test_orig.pkl', 'wb') as pkl_X_test:
+        cPickle.dump(X_test_orig, pkl_X_test)
+    with open('y_test.pkl', 'wb') as pkl_y_test:
+        cPickle.dump(y_test, pkl_y_test)
