@@ -316,7 +316,7 @@ if __name__ == '__main__':
 
     # Save the model to disk
     # To reload, would use model = load_model('my_model.h5')
-    model.save(finalized_model_all.h5')  # creates a HDF5 file
+    model.save('finalized_model_all.h5')  # creates a HDF5 file
 
     # Evaluating CNN Model performance
     y_train_pred, y_test_pred, y_train_pred_proba, y_test_pred_proba, \
