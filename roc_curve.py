@@ -31,15 +31,15 @@ def roc_curve(probabilities, labels):
         tpr = true_positives / float(num_positive_cases)
         # Calculate the False Positive Rate
         fpr = false_positives / float(num_negative_cases)
-        aucs.append(auc(fpr,tpr))
         fprs.append(fpr)
         tprs.append(tpr)
 
-    return tprs, fprs, aucs, thresholds.tolist()
+    return tprs, fprs, thresholds.tolist()
 
 
 probabilities = model.predict_proba(X_train)[:, 1]
-TPRs, FPRs, aucs, thresholds = roc_curve(probabilities, y_test)
+TPRs, FPRs, thresholds = roc_curve(probabilities, y_test)
 plt.plot(FPRs, TPRs, 'b-')
-# plt.plot(aucs)
-plt.show()
+plt.figsave('roc_curve.png')
+auc_calc = auc(fpr, tpr)
+print "AUC: ", auc_calc
