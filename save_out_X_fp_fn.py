@@ -1,5 +1,6 @@
 import cPickle
 from sklearn.model_selection import train_test_split
+import numpy as np
 
 # Specifically to read data from AWS S3 bucket
 import boto
