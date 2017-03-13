@@ -1,4 +1,4 @@
-''' Running CNN to classify satellite images as containing only natural
+pe''' Running CNN to classify satellite images as containing only natural
     objects (0) or containing some man-made objects (1).
     Using Theano with Tensorflow image_dim_ordering :
     (# images, # rows, # cols, # channels)
@@ -277,6 +277,9 @@ if __name__ == '__main__':
     kernel_size = 3
     pool_size = (2, 2)
 
+    # Opening file for printing output
+    print_file = open("cnn_cleaner53600_3conv2d_2drop_flt3x3_adad_bval_gray_AWS.py_log, "w")
+
     # Train/test split for cross validation and making Grayscale
     test_percent = 0.20
     X_train_gray, X_test_gray, y_train, y_test, y_train_orig, y_test_orig = \
@@ -292,6 +295,12 @@ if __name__ == '__main__':
     # Input image dimensions - 124x124x1 for input Grayscale Satellite Images
     img_rows, img_cols, img_dep = X_train_gray.shape[1], X_train_gray.shape[2],\
                                       X_train_gray.shape[3]
+
+    # Printing X_train & X_test shapes to log file
+    print_file.write("Shape of X_train: {0}x{1}x{2}".format(img_rows, img_cols \
+                                                            img_dep))
+    print_file.write("Shape of X_train: {0}x{1}x{2}"\
+                     .format(X_test_gray.shape[0], X_test_gray.shape[1], X_test_gray.shape[2])
 
     # Prep input for Keras
     # For Tensorflow dim_ordering (tf), (# images, # rows, # cols, # chans)
@@ -318,6 +327,12 @@ if __name__ == '__main__':
     recall = float(conf_matrix[0][0]) \
                      / (conf_matrix[0][0] + conf_matrix[1][0])
     f1_score = 2 * (precision * recall) / (precision + recall)
+
+    # Printing model evalutation metrics to log file and to terminal
+    print_file.write("Accuracy: {}\n".format(accuracy))
+    print_file.write("Precision: {}\n".format(precision))
+    print_file.write("Recall: {}\n".format(recall))
+    print_file.write("F1-Score: {}\n".format(f1_score))
     print "Accuracy: {}\n".format(accuracy)
     print "Precision: {}\n".format(precision)
     print "Recall: {}\n".format(recall)
