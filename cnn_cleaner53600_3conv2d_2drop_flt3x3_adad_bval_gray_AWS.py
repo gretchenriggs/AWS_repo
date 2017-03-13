@@ -249,14 +249,7 @@ if __name__ == '__main__':
     features4 = 'X_arr_6700_deg90mir.pkl'
     features5 = 'X_arr_6700_deg180.pkl'
     features6 = 'X_arr_6700_deg180mir.pkl'
-    features7 = 'X_arr_6700_deg270.pkl'    batch_size = 32
-    nb_classes = 2
-    nb_epoch = 20
-    kernel_size = 3
-    pool_size = (2, 2)
-
-    # Train/test split for cross validation
-    test_percent = 0.20
+    features7 = 'X_arr_6700_deg270.pkl'
     features8 = 'X_arr_6700_deg270mir.pkl'
     labels = 'Image_Labels_125x125_53600.txt'
     X1 = get_X_from_bucket(features1)
