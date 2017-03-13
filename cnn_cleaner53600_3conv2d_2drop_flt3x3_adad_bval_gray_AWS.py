@@ -1,4 +1,4 @@
-pe''' Running CNN to classify satellite images as containing only natural
+''' Running CNN to classify satellite images as containing only natural
     objects (0) or containing some man-made objects (1).
     Using Theano with Tensorflow image_dim_ordering :
     (# images, # rows, # cols, # channels)
