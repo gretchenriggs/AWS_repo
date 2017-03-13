@@ -293,7 +293,7 @@ if __name__ == '__main__':
     print_file.write("Shape of X_train: {0}x{1}x{2}".format(img_rows, \
                                                      img_cols, img_dep))
     print_file.write("Shape of X_train: {0}x{1}x{2}"\
-                     .format(X_test_gray.shape[0], X_test_gray.shape[1], X_test_gray.shape[2])
+                     .format(X_test_gray.shape[0], X_test_gray.shape[1], X_test_gray.shape[2]))
 
     # Prep input for Keras
     # For Tensorflow dim_ordering (tf), (# images, # rows, # cols, # chans)
