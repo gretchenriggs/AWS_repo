@@ -271,7 +271,7 @@ if __name__ == '__main__':
     pool_size = (2, 2)
 
     # Opening file for printing output
-    print_file = open("cnn_cleaner53600_3conv2d_2drop_flt3x3_adad_bval_gray_AWS.py_log, "w")
+    print_file = open("cnn_cleaner53600_3conv2d_2drop_flt3x3_adad_bval_gray_AWS.py_log", "w")
 
     # Train/test split for cross validation and making Grayscale
     test_percent = 0.20
