@@ -88,11 +88,15 @@ def train_test(X, y, nb_classes, test_percent=0.20):
     # Calling function to set pixel values between 0-1 and center around zero
     X_train, X_test = preproc(X_train, X_test)
 
+    # Making copy of original 1-D format labels
+    y_train_orig = y_train.copy
+    y_test_orig = y_test.copy
+
     # Convert class vectors to binary class matrices
     y_train = np_utils.to_categorical(y_train, nb_classes)
     y_test = np_utils.to_categorical(y_test, nb_classes)
 
-    return X_train, X_test, y_train, y_test
+    return X_train, X_test, y_train, y_test, y_train_orig, y_test_orig
 
 
 def keras_inp_prep(X_train, X_test, img_dep, img_rows, img_cols, \
