@@ -89,8 +89,8 @@ def train_test(X, y, nb_classes, test_percent=0.20):
     X_train, X_test = preproc(X_train, X_test)
 
     # Making copy of original 1-D format labels
-    y_train_orig = y_train.copy
-    y_test_orig = y_test.copy
+    y_train_orig = y_train.copy()
+    y_test_orig = y_test.copy()
 
     # Convert class vectors to binary class matrices
     y_train = np_utils.to_categorical(y_train, nb_classes)
@@ -274,9 +274,8 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test, y_train_orig, y_test_orig = \
                             train_test(X, y, nb_classes, test_percent)
 
-    # input image dimensions - 124x124x3 for input RGB Satellite Images
-    img_rows, img_cols, img_dep = X_train.shape[1], X_train.shape[2], \
-                                  X_train.shape[3]
+    # input image dimensions - 124x124x1 for input RGB Satellite Images
+    img_rows, img_cols, img_dep = X_train.shape[1], X_train.shape[2], 1
 
     # Prep input for Keras
     # For Tensorflow dim_ordering (tf), (# images, # rows, # cols, # chans)
